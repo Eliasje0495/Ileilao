@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { UserMenuButton } from "./UserDrawer";
+import { usePathname } from "next/navigation";
 
 // ── Icons (reusable) ──────────────────────────────────────────────────────────
 const Ico = {
@@ -191,6 +192,24 @@ function NavMenu({ label, groups, mega }: { label: string; groups: NavGroup[]; m
 // ── SiteHeader ────────────────────────────────────────────────────────────────
 export function SiteHeader() {
   const { data: session } = useSession();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close mobile menu on navigation
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
+
+  const mobileLinks = [
+    { label: "Leilões",             href: "/leiloes" },
+    { label: "Imóveis",             href: "/leiloes?categoria=IMOVEL" },
+    { label: "Veículos",            href: "/leiloes?categoria=VEICULO" },
+    { label: "Máquinas & Agro",     href: "/leiloes?categoria=MAQUINA" },
+    { label: "Próximos Leilões",    href: "/leiloes?status=UPCOMING" },
+    { label: "Leilões ao Vivo",     href: "/leiloes?status=LIVE" },
+    { label: "Vendedores",          href: "/vendedores" },
+    { label: "Como Funciona",       href: "/como-funciona" },
+    { label: "Blog",                href: "/blog" },
+    { label: "Fale Conosco",        href: "/contato" },
+  ];
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -201,7 +220,7 @@ export function SiteHeader() {
           <span className="text-2xl font-black text-gray-900 tracking-tight">Leilão</span>
         </Link>
 
-        {/* Nav */}
+        {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-0.5">
           <NavMenu label="Leilões"             groups={LEILOES_GROUPS}   mega />
           <NavMenu label="Vendedores"          groups={VENDEDORES_GROUPS} />
@@ -210,7 +229,7 @@ export function SiteHeader() {
           <NavMenu label="Indique o Leiloeiro" groups={INDICA_GROUPS} />
         </nav>
 
-        {/* Auth */}
+        {/* Auth + hamburger */}
         <div className="flex items-center gap-3 flex-shrink-0">
           {session ? (
             <UserMenuButton />
@@ -221,13 +240,54 @@ export function SiteHeader() {
                 Cadastre-se
               </Link>
               <Link href="/auth/login"
-                className="text-sm font-semibold border-2 border-blue-600 text-blue-600 px-5 py-2 rounded-full hover:bg-blue-600 hover:text-white transition-all">
+                className="text-sm font-semibold border-2 border-blue-600 text-blue-600 px-5 py-2 rounded-full hover:bg-blue-600 hover:text-white transition-all hidden sm:block">
                 Login
               </Link>
             </>
           )}
+
+          {/* Hamburger — mobile only */}
+          <button
+            onClick={() => setMobileOpen(v => !v)}
+            className="lg:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition"
+            aria-label="Menu"
+          >
+            {mobileOpen ? (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1 shadow-lg">
+          {mobileLinks.map(l => (
+            <Link key={l.href} href={l.href}
+              className="block px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+              {l.label}
+            </Link>
+          ))}
+          {!session && (
+            <div className="flex gap-2 pt-3 border-t border-gray-100 mt-2">
+              <Link href="/auth/login"
+                className="flex-1 text-center text-sm font-bold border-2 border-blue-600 text-blue-600 py-2.5 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                Login
+              </Link>
+              <Link href="/auth/register"
+                className="flex-1 text-center text-sm font-bold bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-700 transition">
+                Cadastre-se
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 }

@@ -15,11 +15,14 @@ export function DashboardNav({ userName, isLeiloeiro, isAdmin }: Props) {
   const first = userName.split(" ")[0];
 
   const links = [
-    { href: "/dashboard/auditorio", label: "Ao Vivo" },
-    { href: "/dashboard", label: "Dashboard", exact: true },
-    { href: "/dashboard/kyc", label: "KYC" },
+    { href: "/dashboard",            label: "Visão Geral", exact: true },
+    { href: "/dashboard/auditorio",  label: "Ao Vivo" },
+    { href: "/dashboard/kyc",        label: "KYC" },
     ...(isLeiloeiro ? [{ href: "/dashboard/leiloeiro", label: "Meus Leilões" }] : []),
-    ...(isAdmin ? [{ href: "/dashboard/admin", label: "Admin" }] : []),
+    ...(isAdmin ? [
+      { href: "/dashboard/admin",      label: "Admin KYC" },
+      { href: "/dashboard/admin/chat", label: "Chat" },
+    ] : []),
     { href: "/leiloes", label: "Explorar" },
   ];
 
