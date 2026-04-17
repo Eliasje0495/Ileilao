@@ -10,6 +10,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session) redirect("/auth/login");
 
   const isLeiloeiro = session.user.role === Role.LEILOEIRO || session.user.role === Role.ADMIN;
+  const isAdmin = session.user.role === Role.ADMIN;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -31,6 +32,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <DashboardNav
             userName={session.user.name}
             isLeiloeiro={isLeiloeiro}
+            isAdmin={isAdmin}
           />
         </div>
       </header>

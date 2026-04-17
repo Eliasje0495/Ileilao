@@ -7,9 +7,10 @@ import { signOut } from "next-auth/react";
 interface Props {
   userName: string;
   isLeiloeiro: boolean;
+  isAdmin?: boolean;
 }
 
-export function DashboardNav({ userName, isLeiloeiro }: Props) {
+export function DashboardNav({ userName, isLeiloeiro, isAdmin }: Props) {
   const pathname = usePathname();
   const first = userName.split(" ")[0];
 
@@ -18,6 +19,7 @@ export function DashboardNav({ userName, isLeiloeiro }: Props) {
     { href: "/dashboard", label: "Dashboard", exact: true },
     { href: "/dashboard/kyc", label: "KYC" },
     ...(isLeiloeiro ? [{ href: "/dashboard/leiloeiro", label: "Meus Leilões" }] : []),
+    ...(isAdmin ? [{ href: "/dashboard/admin", label: "Admin" }] : []),
     { href: "/leiloes", label: "Explorar" },
   ];
 
