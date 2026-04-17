@@ -34,6 +34,7 @@ interface Lot {
   id: string;
   title: string;
   category: string;
+  images: string[] | null;
   startPrice: number;
   currentPrice: number;
   appraisalValue: number | null;
@@ -77,8 +78,13 @@ function LotCard({ lot }: { lot: Lot }) {
     <Link href={`/lote/${lot.id}`}
       className="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all group flex flex-col">
       {/* Image area */}
-      <div className="bg-blue-50 h-40 flex items-center justify-center text-5xl relative flex-shrink-0">
-        <span className="select-none">{icon}</span>
+      <div className="bg-blue-50 h-40 flex items-center justify-center text-5xl relative flex-shrink-0 overflow-hidden">
+        {lot.images && lot.images.length > 0 ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={lot.images[0]} alt={lot.title} className="w-full h-full object-cover" />
+        ) : (
+          <span className="select-none">{icon}</span>
+        )}
         {discount && discount > 0 && (
           <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-black px-2 py-1 rounded-lg shadow">
             -{discount}%

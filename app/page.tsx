@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { HeroSearch } from "@/components/HeroSearch";
 
 export const metadata: Metadata = {
   title: "Leilão de Imóveis, Veículos e Bens Online — iLeilão",
@@ -17,7 +18,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://ileilao.com" },
 };
 
-const ESTADOS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
 const FEATURED = [
   { id: "1", title: "Apartamento 3 quartos — Ibirapuera, São Paulo/SP", category: "Imóvel", discount: 42, price: "R$ 380.000", originalPrice: "R$ 655.000", date1: "23 Abr · 10h00", date2: "30 Abr · 10h00", image: "🏢", tag: "Itaú Unibanco", area: "98m² útil", badge: "Desocupado" },
@@ -130,45 +130,8 @@ export default function HomePage() {
                   Imóveis, veículos, máquinas e muito mais com até <strong className="text-gray-700">80% de desconto</strong>. Leilões judiciais e extrajudiciais em todo o território nacional.
                 </p>
 
-                {/* Search tabs */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {["Localização", "Palavra-Chave", "Próximos Leilões", "Venda Direta"].map((t) => (
-                    <button key={t} className="px-3 py-1.5 rounded-full bg-white border border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all text-xs font-semibold shadow-sm">
-                      {t}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Search box */}
-                <div className="bg-white rounded-2xl shadow-md border border-blue-100 p-4">
-                  <div className="grid grid-cols-2 gap-2 mb-3">
-                    <select className="text-sm border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700 focus:outline-none focus:border-blue-400 col-span-2 md:col-span-1 bg-white">
-                      <option>Todos os imóveis</option>
-                      <option>Residenciais</option>
-                      <option>Comerciais</option>
-                      <option>Rurais</option>
-                      <option>Terrenos</option>
-                      <option>Veículos</option>
-                      <option>Máquinas & Agro</option>
-                      <option>Bens Diversos</option>
-                      <option>Consórcios</option>
-                    </select>
-                    <select className="text-sm border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700 focus:outline-none focus:border-blue-400 bg-white">
-                      <option>UF ({ESTADOS.length})</option>
-                      {ESTADOS.map(e => <option key={e}>{e}</option>)}
-                    </select>
-                    <input placeholder="Todas as cidades" className="text-sm border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700 focus:outline-none focus:border-blue-400" />
-                    <input placeholder="Todos os bairros" className="text-sm border border-gray-200 rounded-xl px-3 py-2.5 text-gray-700 focus:outline-none focus:border-blue-400" />
-                  </div>
-                  <div className="flex gap-2">
-                    <Link href="/leiloes" className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors text-sm text-center">
-                      Buscar
-                    </Link>
-                    <Link href="/leiloes?view=map" className="px-4 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-blue-400 transition-colors">
-                      Mapa
-                    </Link>
-                  </div>
-                </div>
+                {/* Unified search */}
+                <HeroSearch />
 
                 <p className="text-xs text-gray-400 mt-2 text-center">
                   <Link href="/leiloes?status=LIVE" className="text-blue-600 hover:underline font-medium">Leilões ao Vivo</Link>

@@ -103,6 +103,8 @@ export default function LotClient({ lot: initialLot }: Props) {
   const [bidSuccess, setBidSuccess] = useState("");
   const [placing, setPlacing] = useState(false);
   const [activeTab, setActiveTab] = useState<"fotos" | "localizacao">("fotos");
+  const [activeImg, setActiveImg] = useState(0);
+  const images = Array.isArray(lot.images) ? (lot.images as string[]) : [];
   const [showBidHistory, setShowBidHistory] = useState(false);
 
   const minBid = Math.max(lot.currentPrice, lot.startPrice) + lot.minIncrement;
@@ -174,9 +176,37 @@ export default function LotClient({ lot: initialLot }: Props) {
                 </button>
               ))}
             </div>
-            <div className="bg-blue-50 h-72 flex items-center justify-center text-8xl relative">
+            <div className="relative h-72 bg-blue-50 overflow-hidden">
               {activeTab === "fotos" ? (
-                <span className="select-none">{categoryIcon}</span>
+                images.length > 0 ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={images[activeImg]} alt={lot.title}
+                      className="w-full h-full object-cover" />
+                    {images.length > 1 && (
+                      <>
+                        <button onClick={() => setActiveImg(i => (i - 1 + images.length) % images.length)}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition text-sm">
+                          ‹
+                        </button>
+                        <button onClick={() => setActiveImg(i => (i + 1) % images.length)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition text-sm">
+                          ›
+                        </button>
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                          {images.map((_, i) => (
+                            <button key={i} onClick={() => setActiveImg(i)}
+                              className={`w-1.5 h-1.5 rounded-full transition ${i === activeImg ? "bg-white" : "bg-white/50"}`} />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-8xl select-none">
+                    {categoryIcon}
+                  </div>
+                )
               ) : (
                 <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-sm font-medium">
                   📍 Mapa indisponível
@@ -195,6 +225,17 @@ export default function LotClient({ lot: initialLot }: Props) {
                 </div>
               )}
             </div>
+            {/* Thumbnail strip */}
+            {images.length > 1 && (
+              <div className="flex gap-2 p-2 bg-white border-t border-gray-100 overflow-x-auto">
+                {images.map((url, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={i} src={url} alt={`Foto ${i + 1}`}
+                    onClick={() => setActiveImg(i)}
+                    className={`w-14 h-10 object-cover rounded-lg cursor-pointer flex-shrink-0 transition ${i === activeImg ? "ring-2 ring-blue-500" : "opacity-60 hover:opacity-100"}`} />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Title block */}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { ImageUploader } from "@/components/ImageUploader";
 
 interface Lot {
   id: string; title: string; category: string;
@@ -23,6 +24,7 @@ export default function ManageAuctionPage() {
   const [auction, setAuction] = useState<Auction | null>(null);
   const [showLotForm, setShowLotForm] = useState(false);
   const [lot, setLot] = useState({ title: "", description: "", category: "IMOVEL", startPrice: "", minIncrement: "", appraisalValue: "", uf: "", cidade: "" });
+  const [lotImages, setLotImages] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -37,7 +39,7 @@ export default function ManageAuctionPage() {
     const res = await fetch("/api/lots", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...lot, auctionId: id, startPrice: parseFloat(lot.startPrice), minIncrement: parseFloat(lot.minIncrement), appraisalValue: lot.appraisalValue ? parseFloat(lot.appraisalValue) : null }),
+      body: JSON.stringify({ ...lot, images: lotImages, auctionId: id, startPrice: parseFloat(lot.startPrice), minIncrement: parseFloat(lot.minIncrement), appraisalValue: lot.appraisalValue ? parseFloat(lot.appraisalValue) : null }),
     });
     const data = await res.json();
     setSaving(false);
@@ -45,6 +47,7 @@ export default function ManageAuctionPage() {
     setAuction(a => a ? { ...a, lots: [...a.lots, data.lot] } : a);
     setShowLotForm(false);
     setLot({ title: "", description: "", category: "IMOVEL", startPrice: "", minIncrement: "", appraisalValue: "", uf: "", cidade: "" });
+    setLotImages([]);
   }
 
   async function publishAuction() {
@@ -146,6 +149,10 @@ export default function ManageAuctionPage() {
                 <label className="block text-xs font-medium text-gray-600 mb-1">Cidade</label>
                 <input value={lot.cidade} onChange={e => setL("cidade", e.target.value)} placeholder="São Paulo"
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-600 mb-1">Fotos do lote</label>
+                <ImageUploader images={lotImages} onChange={setLotImages} />
               </div>
             </div>
             <button type="submit" disabled={saving} className="bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition disabled:opacity-60">

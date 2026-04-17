@@ -90,6 +90,7 @@ export default async function LeiloesPage({ searchParams }: { searchParams: Prom
     minIncrement: Number(lot.minIncrement),
     appraisalValue: lot.appraisalValue ? Number(lot.appraisalValue) : null,
     reservePrice: lot.reservePrice ? Number(lot.reservePrice) : null,
+    images: Array.isArray(lot.images) ? (lot.images as string[]) : null,
   }));
 
   const catMap: Record<string, string> = { IMOVEL: "Imóveis", VEICULO: "Veículos", MAQUINA: "Máquinas & Agro", DIVERSOS: "Bens Diversos" };

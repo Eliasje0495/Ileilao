@@ -265,6 +265,32 @@ model Document {
   @@index([type])
 }
 
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String   // visitor browser session
+  sender    String   // "user" | "support"
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  assunto   String
+  date      DateTime // date + time of the appointment
+  status    String   @default("PENDING") // PENDING | CONFIRMED | CANCELLED
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([date])
+  @@index([email])
+}
+
 model KycDocument {
   id         String    @id @default(cuid())
   userId     String
