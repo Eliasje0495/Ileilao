@@ -70,6 +70,83 @@ export default function VendedoresPage() {
         </div>
       </section>
 
+      {/* ── Comitentes / Parceiros ──────────────────────────────────────────── */}
+      <section className="max-w-5xl mx-auto px-4 py-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Quem já confia na iLeilão</h2>
+        <p className="text-sm text-gray-500 text-center mb-10">Instituições financeiras, tribunais e empresas que publicam seus leilões conosco.</p>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Col 1 */}
+          <div>
+            <h3 className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-4">Instituições Financeiras</h3>
+            <ul className="space-y-2.5">
+              {[
+                "Banco Santander", "Itaú Unibanco S.A", "Banco Bradesco",
+                "Banco Safra", "Banco Inter", "Banco Bari",
+                "Banco Daycoval", "Banco Original", "Caixa Econômica Federal",
+                "Banco do Brasil", "BTG Pactual", "BSP Empreendimentos Imobiliários",
+              ].map(n => (
+                <li key={n} className="text-sm text-gray-600 hover:text-blue-700 transition-colors cursor-default">{n}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 2 */}
+          <div>
+            <h3 className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-4">Leilão Judicial</h3>
+            <ul className="space-y-2.5 mb-8">
+              {[
+                "TJSP — Tribunal de Justiça de SP",
+                "TJPR — Tribunal de Justiça do Paraná",
+                "TJRJ — Tribunal de Justiça do Rio",
+                "TJMG — Tribunal de Justiça de MG",
+                "TJRS — Tribunal de Justiça do RS",
+                "Comprei",
+              ].map(n => (
+                <li key={n} className="text-sm text-gray-600 hover:text-blue-700 transition-colors cursor-default">{n}</li>
+              ))}
+            </ul>
+
+            <h3 className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-4">Securitizadoras</h3>
+            <ul className="space-y-2.5">
+              {[
+                "Ore Securitizadora",
+                "Flowinvest Fundo de Investimento",
+                "High Fundo de Investimentos",
+                "Galleria Home Equity",
+                "GVC Geração de Valor em Cobrança",
+              ].map(n => (
+                <li key={n} className="text-sm text-gray-600 hover:text-blue-700 transition-colors cursor-default">{n}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 3 */}
+          <div>
+            <h3 className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-4">Empresas & Incorporadoras</h3>
+            <ul className="space-y-2.5">
+              {[
+                "Banco Sicoob", "Creditas Soluções Financeiras",
+                "Enforce", "Engeform",
+                "F A Oliva & Cia", "Lichtenberg",
+                "Outros Comitentes", "Pacaembu Construtora",
+                "Porto Seguro", "Sicredi",
+                "SPGPrints", "Unicos Incorporadora e Urbanismo",
+                "ITV Urbanismo", "Banco do Estado de Sergipe S/A",
+              ].map(n => (
+                <li key={n} className="text-sm text-gray-600 hover:text-blue-700 transition-colors cursor-default">{n}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link href="/contato" className="inline-block border border-blue-200 text-blue-700 text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-50 transition">
+            Quero ser um comitente →
+          </Link>
+        </div>
+      </section>
+
       <section className="bg-blue-600 py-10">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h2 className="text-xl font-bold text-white mb-2">Pronto para publicar seus lotes?</h2>
