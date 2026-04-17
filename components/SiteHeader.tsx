@@ -231,7 +231,7 @@ export function SiteHeader() {
 
         {/* Auth + hamburger */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          <Link href="/vendedores"
+          <Link href="/quero-vender"
             className="hidden md:block text-sm font-semibold bg-yellow-400 hover:bg-yellow-500 text-blue-900 px-4 py-2 rounded-full transition-all">
             Quero Vender
           </Link>
