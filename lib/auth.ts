@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
+import GitHubProvider from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { Role, KycStatus } from "@prisma/client";
@@ -54,6 +55,10 @@ export const authOptions: NextAuthOptions = {
     AppleProvider({
       clientId: process.env.APPLE_ID!,
       clientSecret: process.env.APPLE_SECRET!,
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
     // Gov.br OAuth2 — Login com Gov.br (acesso.gov.br)
     {
@@ -149,7 +154,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       // OAuth providers: upsert user on first sign-in
-      const oauthProviders = ["govbr", "google", "apple"];
+      const oauthProviders = ["govbr", "google", "apple", "github"];
       if (account && oauthProviders.includes(account.provider) && user.email) {
         const existing = await prisma.user.findUnique({ where: { email: user.email } });
         if (!existing) {
