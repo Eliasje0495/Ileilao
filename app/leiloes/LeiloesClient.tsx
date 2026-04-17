@@ -38,6 +38,8 @@ interface Lot {
   currentPrice: number;
   appraisalValue: number | null;
   status: string;
+  uf: string | null;
+  cidade: string | null;
   auction: {
     id: string;
     title: string;
@@ -98,9 +100,14 @@ function LotCard({ lot }: { lot: Lot }) {
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
         <p className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">{catLabel}</p>
-        <p className="font-bold text-gray-900 text-sm leading-snug mb-auto group-hover:text-blue-700 transition-colors line-clamp-2 pb-2">
+        <p className="font-bold text-gray-900 text-sm leading-snug group-hover:text-blue-700 transition-colors line-clamp-2">
           {lot.title}
         </p>
+        {(lot.cidade || lot.uf) && (
+          <p className="text-xs text-gray-400 mt-0.5 mb-auto pb-2">
+            📍 {[lot.cidade, lot.uf].filter(Boolean).join(" · ")}
+          </p>
+        )}
 
         {/* Auction dates */}
         <div className="space-y-1 mt-2 border-t border-gray-50 pt-2">
