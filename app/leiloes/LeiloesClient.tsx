@@ -1,8 +1,25 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
+function useFavorites() {
+  const [favs, setFavs] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try { return new Set(JSON.parse(localStorage.getItem("ileilao_favs") ?? "[]")); }
+    catch { return new Set(); }
+  });
+  const toggle = useCallback((id: string) => {
+    setFavs(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      localStorage.setItem("ileilao_favs", JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+  return { favs, toggle };
+}
 
 const ESTADOS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
@@ -63,7 +80,7 @@ function fmtPrice(n: number) {
   return "R$ " + n.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 }
 
-function LotCard({ lot }: { lot: Lot }) {
+function LotCard({ lot, favorited, onToggleFav }: { lot: Lot; favorited: boolean; onToggleFav: (id: string) => void }) {
   const discount = lot.appraisalValue && lot.appraisalValue > lot.currentPrice
     ? Math.round((1 - lot.currentPrice / lot.appraisalValue) * 100)
     : null;
@@ -101,6 +118,15 @@ function LotCard({ lot }: { lot: Lot }) {
             📎 {lot.documents.length}
           </span>
         )}
+        <button
+          onClick={e => { e.preventDefault(); onToggleFav(lot.id); }}
+          className="absolute top-3 right-3 w-7 h-7 bg-white/90 hover:bg-white rounded-lg shadow flex items-center justify-center transition hover:scale-110"
+          aria-label="Favoritar"
+        >
+          <svg className={`w-4 h-4 ${favorited ? "fill-yellow-400 stroke-yellow-400" : "fill-none stroke-gray-400"}`} viewBox="0 0 24 24" strokeWidth="2">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+          </svg>
+        </button>
       </div>
 
       {/* Content */}
@@ -156,6 +182,7 @@ export default function LeiloesClient({ lots, initialParams, catLabel, totalCoun
   const searchParamsHook = useSearchParams();
   const [, startTransition] = useTransition();
   const [showFilters, setShowFilters] = useState(false);
+  const { favs, toggle: toggleFav } = useFavorites();
 
   // Local filter state
   const [sort, setSort] = useState(initialParams.sort ?? "date");
@@ -302,7 +329,7 @@ export default function LeiloesClient({ lots, initialParams, catLabel, totalCoun
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {lots.map(lot => <LotCard key={lot.id} lot={lot} />)}
+            {lots.map(lot => <LotCard key={lot.id} lot={lot} favorited={favs.has(lot.id)} onToggleFav={toggleFav} />)}
           </div>
         )}
 
