@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
+import { NewsletterForm } from "@/components/NewsletterForm";
 
 export const metadata: Metadata = {
   title: "Leilão de Imóveis, Veículos e Bens Online — iLeilão",
@@ -424,16 +425,7 @@ export default function HomePage() {
           <div className="bg-gray-50 rounded-2xl p-8 text-center">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Vamos encontrar o imóvel ideal?</h2>
             <p className="text-sm text-gray-500 mb-6">Receba as melhores oportunidades de leilão por e-mail antes de todos.</p>
-            <form className="flex flex-col md:flex-row gap-3 max-w-lg mx-auto">
-              <input type="email" placeholder="Seu melhor e-mail" className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-blue-400" />
-              <select className="px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:border-blue-400 bg-white">
-                <option value="">Estado (UF)</option>
-                {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
-              </select>
-              <button type="submit" className="bg-blue-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors text-sm flex-shrink-0">
-                Enviar
-              </button>
-            </form>
+            <NewsletterForm />
             <p className="text-xs text-gray-400 mt-3">
               Ao se cadastrar, você concorda com nossa{" "}
               <Link href="/privacidade" className="text-blue-600 hover:underline">Política de Privacidade</Link>
