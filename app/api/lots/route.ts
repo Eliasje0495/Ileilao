@@ -14,6 +14,8 @@ const createSchema = z.object({
   minIncrement: z.number().positive(),
   appraisalValue: z.number().positive().nullable().optional(),
   reservePrice: z.number().positive().nullable().optional(),
+  uf: z.string().length(2).toUpperCase().optional().nullable(),
+  cidade: z.string().max(100).optional().nullable(),
 });
 
 export async function POST(req: NextRequest) {
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
 
-  const { auctionId, title, description, category, startPrice, minIncrement, appraisalValue, reservePrice } = parsed.data;
+  const { auctionId, title, description, category, startPrice, minIncrement, appraisalValue, reservePrice, uf, cidade } = parsed.data;
 
   const auction = await prisma.auction.findUnique({ where: { id: auctionId } });
   if (!auction) return NextResponse.json({ error: "Leilão não encontrado." }, { status: 404 });
@@ -44,6 +46,8 @@ export async function POST(req: NextRequest) {
       minIncrement,
       appraisalValue: appraisalValue ?? null,
       reservePrice: reservePrice ?? null,
+      uf: uf ?? null,
+      cidade: cidade ?? null,
     },
   });
 

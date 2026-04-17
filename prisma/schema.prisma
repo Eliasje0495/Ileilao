@@ -175,6 +175,8 @@ model Lot {
   editalUrl      String?
   appraisalValue Decimal?    @db.Decimal(15, 2)
   reservePrice   Decimal?    @db.Decimal(15, 2)
+  uf             String?     // Estado (UF) onde o bem está localizado
+  cidade         String?     // Cidade onde o bem está localizado
   createdAt      DateTime    @default(now())
 
   bids           Bid[]

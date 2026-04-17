@@ -58,6 +58,7 @@ export default async function LeiloesPage({ searchParams }: { searchParams: Prom
       ...(minPrice !== undefined ? { currentPrice: { gte: minPrice } } : {}),
       ...(maxPrice !== undefined ? { currentPrice: { lte: maxPrice } } : {}),
       ...(p.q ? { title: { contains: p.q, mode: "insensitive" } } : {}),
+      ...(p.uf ? { uf: p.uf.toUpperCase() } : {}),
       auction: { status: { in: [AuctionStatus.UPCOMING, AuctionStatus.LIVE] } },
     },
     include: {

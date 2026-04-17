@@ -22,7 +22,7 @@ export default function ManageAuctionPage() {
   const router = useRouter();
   const [auction, setAuction] = useState<Auction | null>(null);
   const [showLotForm, setShowLotForm] = useState(false);
-  const [lot, setLot] = useState({ title: "", description: "", category: "IMOVEL", startPrice: "", minIncrement: "", appraisalValue: "" });
+  const [lot, setLot] = useState({ title: "", description: "", category: "IMOVEL", startPrice: "", minIncrement: "", appraisalValue: "", uf: "", cidade: "" });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -44,7 +44,7 @@ export default function ManageAuctionPage() {
     if (!res.ok) { setError(data.error ?? "Erro ao adicionar lote."); return; }
     setAuction(a => a ? { ...a, lots: [...a.lots, data.lot] } : a);
     setShowLotForm(false);
-    setLot({ title: "", description: "", category: "IMOVEL", startPrice: "", minIncrement: "", appraisalValue: "" });
+    setLot({ title: "", description: "", category: "IMOVEL", startPrice: "", minIncrement: "", appraisalValue: "", uf: "", cidade: "" });
   }
 
   async function publishAuction() {
@@ -135,6 +135,16 @@ export default function ManageAuctionPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Valor de avaliação (R$)</label>
                 <input type="number" min="0" step="0.01" value={lot.appraisalValue} onChange={e => setL("appraisalValue", e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">UF</label>
+                <input value={lot.uf} onChange={e => setL("uf", e.target.value.toUpperCase())} maxLength={2} placeholder="SP"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Cidade</label>
+                <input value={lot.cidade} onChange={e => setL("cidade", e.target.value)} placeholder="São Paulo"
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>

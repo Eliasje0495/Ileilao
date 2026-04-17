@@ -24,6 +24,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/contato`,                  lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/termos`,                   lastModified: now, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE}/privacidade`,              lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE}/etica`,                    lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE}/midia`,                    lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE}/vendedores`,               lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE}/ebook`,                    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
   ];
 
   // State pages: /leiloes/imoveis/sp, /leiloes/veiculos/rj, etc.
