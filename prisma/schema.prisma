@@ -1,0 +1,279 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  BUYER
+  SELLER
+  ADMIN
+  LEILOEIRO
+}
+
+enum KycStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum LotCategory {
+  IMOVEL
+  VEICULO
+  MAQUINA
+  DIVERSOS
+}
+
+enum LotStatus {
+  DRAFT
+  PUBLISHED
+  LIVE
+  SOLD
+  WITHDRAWN
+}
+
+enum AuctionStatus {
+  UPCOMING
+  LIVE
+  ENDED
+  CANCELLED
+}
+
+enum CaucaoStatus {
+  PENDING
+  HELD
+  RELEASED
+  FORFEITED
+}
+
+enum PaymentMethod {
+  PIX
+  CARD
+  BOLETO
+  WIRE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum DocumentType {
+  EDITAL
+  MATRICULA
+  LAUDO
+  ATA
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id             String      @id @default(cuid())
+  email          String      @unique
+  password       String
+  name           String
+  phone          String?
+  cpf            String?     // AES-256 encrypted
+  uf             String?     // Estado de interesse (e.g. "SP")
+  cidades        Json        @default("[]") // Array of city names (up to 5)
+  govBrSub          String?     @unique // Gov.br subject ID (OAuth2)
+  username          String?     @unique // Public nickname (min 6 chars)
+  referralSource    String?     // Como conheceu o site
+  birthDate         DateTime?
+  cpfRaw            String?
+  // Pessoa Jurídica fields
+  tipoCadastro      String?     @default("PF") // "PF" | "PJ"
+  cnpj              String?
+  razaoSocial       String?
+  inscricaoEstadual String?
+  dataAbertura      DateTime?
+  nomeSocio         String?
+  cpfSocio          String?
+  nomeContato       String?
+  telefoneComercial String?
+  addressCep        String?
+  addressStreet     String?
+  addressNumber     String?
+  addressComplement String?
+  addressNeighborhood String?
+  addressCity       String?
+  addressUf         String?
+  selfieUrl         String?
+  // Estrangeiro fields
+  isEstrangeiro     Boolean     @default(false)
+  nacionalidade     String?
+  rg                String?
+  telefoneFixo      String?
+  estadoCivil       String?
+  profissao         String?
+  onboardingStep    Int         @default(0)
+  phoneVerified     Boolean     @default(false)
+  acceptWhatsapp    Boolean     @default(false)
+  acceptTerms       Boolean     @default(false)
+  emailVerified     Boolean     @default(false)
+  emailVerifyToken  String?     // 6-char code
+  emailVerifyExpiry DateTime?
+  role           Role        @default(BUYER)
+  kycStatus      KycStatus   @default(NONE)
+  kycVerifiedAt  DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  bids           Bid[]
+  caucoes        Caucao[]
+  payments       Payment[]
+  kycDocuments   KycDocument[]
+  wonLots        Lot[]       @relation("LotWinner")
+  auctionsLed    Auction[]   @relation("AuctionLeiloeiro")
+
+  @@index([email])
+  @@index([kycStatus])
+  @@index([role])
+}
+
+model Auction {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  leiloeiroId String
+  leiloeiro   User          @relation("AuctionLeiloeiro", fields: [leiloeiroId], references: [id])
+  status      AuctionStatus @default(UPCOMING)
+  startsAt    DateTime
+  endsAt      DateTime
+  createdAt   DateTime      @default(now())
+
+  lots        Lot[]
+
+  @@index([status])
+  @@index([startsAt])
+  @@index([leiloeiroId])
+}
+
+model Lot {
+  id             String      @id @default(cuid())
+  title          String
+  description    String?
+  category       LotCategory @default(DIVERSOS)
+  images         Json        @default("[]")
+  startPrice     Decimal     @db.Decimal(15, 2)
+  currentPrice   Decimal     @db.Decimal(15, 2)
+  minIncrement   Decimal     @db.Decimal(15, 2)
+  status         LotStatus   @default(DRAFT)
+  auctionId      String
+  auction        Auction     @relation(fields: [auctionId], references: [id])
+  winnerId       String?
+  winner         User?       @relation("LotWinner", fields: [winnerId], references: [id])
+  winnerBidId    String?     @unique
+  editalUrl      String?
+  appraisalValue Decimal?    @db.Decimal(15, 2)
+  reservePrice   Decimal?    @db.Decimal(15, 2)
+  createdAt      DateTime    @default(now())
+
+  bids           Bid[]
+  caucoes        Caucao[]
+  payments       Payment[]
+  documents      Document[]
+  winnerBid      Bid?        @relation("LotWinnerBid", fields: [winnerBidId], references: [id])
+
+  @@index([auctionId])
+  @@index([status])
+  @@index([category])
+  @@index([winnerId])
+}
+
+model Bid {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  lotId         String
+  lot           Lot      @relation(fields: [lotId], references: [id])
+  amount        Decimal  @db.Decimal(15, 2)
+  timestamp     DateTime @default(now())
+  ipAddress     String?
+  deviceId      String?
+  userAgent     String?
+  hashChain     String   // SHA-256 of (previousHash + bidData)
+  isValid       Boolean  @default(true)
+  invalidReason String?
+  createdAt     DateTime @default(now())
+
+  winnerOfLot   Lot?     @relation("LotWinnerBid")
+
+  @@index([lotId])
+  @@index([userId])
+  @@index([lotId, timestamp])
+  @@index([isValid])
+}
+
+model Caucao {
+  id                   String       @id @default(cuid())
+  userId               String
+  user                 User         @relation(fields: [userId], references: [id])
+  lotId                String
+  lot                  Lot          @relation(fields: [lotId], references: [id])
+  amount               Decimal      @db.Decimal(15, 2)
+  status               CaucaoStatus @default(PENDING)
+  stripePaymentIntentId String?     @unique
+  createdAt            DateTime     @default(now())
+
+  @@index([userId])
+  @@index([lotId])
+  @@index([status])
+  @@unique([userId, lotId])
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  userId                String
+  user                  User          @relation(fields: [userId], references: [id])
+  lotId                 String
+  lot                   Lot           @relation(fields: [lotId], references: [id])
+  amount                Decimal       @db.Decimal(15, 2)
+  method                PaymentMethod
+  status                PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?       @unique
+  pixQrCode             String?
+  pixExpiry             DateTime?
+  createdAt             DateTime      @default(now())
+
+  @@index([userId])
+  @@index([lotId])
+  @@index([status])
+}
+
+model Document {
+  id        String       @id @default(cuid())
+  lotId     String
+  lot       Lot          @relation(fields: [lotId], references: [id])
+  type      DocumentType
+  url       String
+  hash      String       // SHA-256 of document content for integrity
+  signedAt  DateTime?
+  createdAt DateTime     @default(now())
+
+  @@index([lotId])
+  @@index([type])
+}
+
+model KycDocument {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  type       String    // e.g. "CPF", "RG", "CNH", "COMPROVANTE"
+  url        String
+  status     KycStatus @default(PENDING)
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([status])
+}
